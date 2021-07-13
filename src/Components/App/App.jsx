@@ -15,17 +15,26 @@ class App extends React.Component {
         reqStatus: 'idle',
         page: 1,
         showModal: false,
+        fullImg: null,
     };
      
-    toggleModal = () => {
-        this.setState(({ showModal }) => ({
+    toggleModal = props => {
+        this.setState(({ showModal}) => ({
             showModal: !showModal,
+            fullImg: props,
         }));
     }
 
-    handleFormSubmit = imageName => {
-        this.setState({ imageName });
+    handleFormSubmit = (imageName) => {
+        this.setState({ imageName});
     }
+
+    onCloseModal = () => {
+        this.setState({
+            fullImg: null,
+            showModal: false,
+        })
+    };
 
     async componentDidUpdate(_, prevState) {
         if (prevState.imageName !== this.state.imageName) {
@@ -35,12 +44,12 @@ class App extends React.Component {
     }
 
     render() {
-        const { images, showModal } = this.state;
+        const { images, showModal, fullImg } = this.state;
         const showImagesGallery = images.length >= 1;
         return (
             <div className={s.App}>
-                {showModal && <Modal/>}
-                <Searchbar onSubmit={this.handleFormSubmit} />
+                {showModal && <Modal fullImg={fullImg} onClick={this.onCloseModal}/>}
+                <Searchbar onSubmit={this.handleFormSubmit}/>
                 {showImagesGallery && <ImageGallery images={images} onClick={this.toggleModal}/>}
             </div>
         )

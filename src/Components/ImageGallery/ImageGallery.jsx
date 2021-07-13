@@ -7,7 +7,7 @@ const ImageGallery = ({images, onClick}) => {
             {images.map(image => (
                 <li key={image.id}><img src={image.webformatURL} alt="" onClick={(e => {
                     e.preventDefault()
-                    onClick();
+                    onClick(image.largeImageURL);
                 })}/></li>
             ))}
         </ul>
