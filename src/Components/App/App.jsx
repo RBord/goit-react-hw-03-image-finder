@@ -7,7 +7,6 @@ import Button from '../Button/Button';
 import Spinner from '../Loader/Loader';
 
 import s from '../App/App.module.css';
-// import toast, { Toaster } from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -38,43 +37,47 @@ class App extends React.Component {
             showModal: false,
         })
     };
-
-    onClickBtn = () => {
-        this.setState(prevState => ({
-            page: prevState.page + 1,
-        }));
-    };
-    async componentDidUpdate(_, prevState) {
-        const { imageName, page} = this.state;
-        const isPageUpdate = prevState.page !== page;
-        const updateStringQuery = prevState.imageName !== imageName;
-
-        try {
-            if (updateStringQuery || isPageUpdate) {
-            this.setState({ reqStatus: 'pending'});
-            const images = await fetchImages(imageName, page);
-            this.setState({ reqStatus: 'resolve'});
-
-            if (isPageUpdate) {
-                this.setState(prevState => {
-                    return {
-                        images: [...prevState.images, ...images],
-                    }
-                })
-            } 
-            if (updateStringQuery || page === 1 ) {
-                this.setState({images, page: 1})
-                }
-            }
-        }
-        catch {
-            console.error();
-        }
+    onScroll = () => {
         window.scrollTo({
             top: document.documentElement.scrollHeight,
             behavior: 'smooth',
         });
     }
+    onClickBtn = () => {
+        this.setState(prevState => ({
+            page: prevState.page + 1,
+        }));
+    };
+    
+    async componentDidUpdate(_, prevState) {
+        const { imageName, page } = this.state;
+        const isPageUpdate = prevState.page !== page;
+        const updateStringQuery = prevState.imageName !== imageName;
+
+        if (updateStringQuery || isPageUpdate) {
+            try {
+                this.setState({ reqStatus: 'pending' });
+                const images = await fetchImages(imageName, page);
+                this.setState({ reqStatus: 'resolve' });
+            
+                if (isPageUpdate) {
+                    this.setState(prevState => {
+                        return {
+                            images: [...prevState.images, ...images],
+                        }
+                    })
+                    this.onScroll();
+                }
+                if (updateStringQuery) {
+                    this.setState({ images, page: 1 })
+                }
+            }
+            catch {
+                console.error();
+            }
+        }
+    }
+        
     
     render() {
         const { images, showModal, fullImg, reqStatus } = this.state;
@@ -88,7 +91,6 @@ class App extends React.Component {
                 {reqStatus === 'pending' && <Spinner/>}
                 {showImagesGallery && <ImageGallery images={images} onClick={this.toggleModal} />}
                 {showImagesGallery && <Button onClick={this.onClickBtn} />}
-                {/* <Toaster/> */}
             </div>
         )
     }
