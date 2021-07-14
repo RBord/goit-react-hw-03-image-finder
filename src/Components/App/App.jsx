@@ -3,9 +3,9 @@ import { fetchImages } from '../../Services/api';
 import Searchbar from '../Searchbar/Searchbar';
 import ImageGallery from '../ImageGallery/ImageGallery';
 import Modal from '../Modal/Modal';
+import Button from '../Button/Button';
 
 import s from '../App/App.module.css';
-
 
 
 class App extends React.Component {
@@ -25,7 +25,7 @@ class App extends React.Component {
         }));
     }
 
-    handleFormSubmit = (imageName) => {
+    handleFormSubmit = imageName => {
         this.setState({ imageName});
     }
 
@@ -36,11 +36,31 @@ class App extends React.Component {
         })
     };
 
+    onClickBtn = () => {
+        this.setState(prevState => ({
+            page: prevState.page + 1,
+        }));
+    };
     async componentDidUpdate(_, prevState) {
-        if (prevState.imageName !== this.state.imageName) {
-            const images = await fetchImages(this.state.imageName, this.state.page);
-            this.setState({ images });
-        } 
+        const { imageName, page } = this.state;
+        const isPageUpdate = prevState.page !== page;
+        const updateStringQuery = prevState.imageName !== imageName;
+
+        if (updateStringQuery || isPageUpdate) {
+            this.setState({ reqStatus: 'pending' });
+            const images = await fetchImages(imageName, page);
+            this.setState({ reqStatus: 'resolve'});
+
+            if (isPageUpdate) {
+                this.setState(prevState => {
+                    return {
+                    images: [...prevState.images, ...images],
+                }})
+            }
+            if (updateStringQuery) {
+                this.setState({images, page: 1})
+            }
+        }
     }
 
     render() {
@@ -50,7 +70,8 @@ class App extends React.Component {
             <div className={s.App}>
                 {showModal && <Modal fullImg={fullImg} onClick={this.onCloseModal}/>}
                 <Searchbar onSubmit={this.handleFormSubmit}/>
-                {showImagesGallery && <ImageGallery images={images} onClick={this.toggleModal}/>}
+                {showImagesGallery && <ImageGallery images={images} onClick={this.toggleModal} />}
+                {showImagesGallery && <Button onClick={this.onClickBtn}/>}
             </div>
         )
     }
