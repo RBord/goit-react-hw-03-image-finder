@@ -49,33 +49,34 @@ class App extends PureComponent {
         }));
     };
     componentDidMount() {
-        this.setState({reqStatus: 'idle'})
+        this.setState({ reqStatus: 'idle' })
     }
     async componentDidUpdate(_, prevState) {
-        const { imageName, page} = this.state;
+        const { imageName, page, reqStatus} = this.state;
         const isPageUpdate = prevState.page !== page;
         const updateStringQuery = prevState.imageName !== imageName;
-
-        if (updateStringQuery || isPageUpdate) {
+        if (updateStringQuery || isPageUpdate ) {
             
             try {
                 this.setState({ reqStatus: 'pending' })
                 const images = await fetchImages(imageName, page).then(this.setState({ reqStatus: 'resolve' }));
-
+                
                 if (isPageUpdate) {
                     this.setState(prevState => {
                         return {
                             images: [...prevState.images, ...images],
                         }
                     })
-                    this.onScroll();
                 }
                 if (updateStringQuery || page === 1) {
-                    this.setState({ images, page: 1});
+                    this.setState({ images, page: 1 });
                 }
             }
             catch {
                 console.error();
+            }
+            if (reqStatus === 'resolve') {
+                this.onScroll();
             }
         }
     }
