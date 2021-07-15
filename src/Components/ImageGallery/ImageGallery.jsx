@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import s from '../ImageGallery/ImageGallery.module.css';
 
-const ImageGallery = ({images, onClick}) => {
-    return (
+class ImageGallery extends PureComponent {
+    
+    render() {
+        const { images, onClick } = this.props;
+        
+        return (
         <ul className={s.ImageGallery}>
             {images.map(image => (
                 <li key={image.id}><img src={image.webformatURL} alt="" onClick={(e => {
@@ -12,5 +16,6 @@ const ImageGallery = ({images, onClick}) => {
             ))}
         </ul>
     )
-};
+    }
+}
 export default ImageGallery;

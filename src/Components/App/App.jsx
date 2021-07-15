@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PureComponent} from 'react';
 import { fetchImages } from '../../Services/api';
 import Searchbar from '../Searchbar/Searchbar';
 import ImageGallery from '../ImageGallery/ImageGallery';
@@ -10,7 +10,7 @@ import s from '../App/App.module.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-class App extends React.Component {
+class App extends PureComponent {
     state = {
         imageName: null,
         images: [],
@@ -50,7 +50,7 @@ class App extends React.Component {
     };
     
     async componentDidUpdate(_, prevState) {
-        const { imageName, page } = this.state;
+        const { imageName, page} = this.state;
         const isPageUpdate = prevState.page !== page;
         const updateStringQuery = prevState.imageName !== imageName;
 
@@ -78,7 +78,6 @@ class App extends React.Component {
         }
     }
         
-    
     render() {
         const { images, showModal, fullImg, reqStatus } = this.state;
         const isLoading = reqStatus === 'pending';
