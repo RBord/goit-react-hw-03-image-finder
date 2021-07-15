@@ -48,18 +48,16 @@ class App extends PureComponent {
             page: prevState.page + 1,
         }));
     };
-    componentDidMount() {
-        this.setState({ reqStatus: 'idle' })
-    }
+    
     async componentDidUpdate(_, prevState) {
-        const { imageName, page, reqStatus} = this.state;
+        const { imageName, page} = this.state;
         const isPageUpdate = prevState.page !== page;
         const updateStringQuery = prevState.imageName !== imageName;
-        if (updateStringQuery || isPageUpdate ) {
-            
+        if (updateStringQuery || isPageUpdate) {
+            this.setState({ reqStatus: 'pending' })
             try {
-                this.setState({ reqStatus: 'pending' })
-                const images = await fetchImages(imageName, page).then(this.setState({ reqStatus: 'resolve' }));
+                
+                const images = await fetchImages(imageName, page).then(this.setState({ reqStatus: 'resolved' }));
                 
                 if (isPageUpdate) {
                     this.setState(prevState => {
@@ -67,22 +65,22 @@ class App extends PureComponent {
                             images: [...prevState.images, ...images],
                         }
                     })
+                    
                 }
                 if (updateStringQuery || page === 1) {
-                    this.setState({ images, page: 1 });
+                    this.setState({ images, page: 1});
                 }
+                
+                this.onScroll()
             }
             catch {
                 console.error();
-            }
-            if (reqStatus === 'resolve') {
-                this.onScroll();
             }
         }
     }
         
     render() {
-        const { images, showModal, fullImg, reqStatus } = this.state;
+        const { images, showModal, fullImg, reqStatus} = this.state;
         const isLoading = reqStatus === 'pending';
         const showImagesGallery = images.length >= 1 && !isLoading;
         
