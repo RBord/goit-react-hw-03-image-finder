@@ -59,23 +59,24 @@ class App extends PureComponent {
             try {
                 const images = await fetchImages(imageName, page).then(this.setState({ reqStatus: 'resolved' }));
 
-                if (isPageUpdate) {
+                if (isPageUpdate && page !== 1) {
                     this.setState(prevState => {
                         return {
                             images: [...prevState.images, ...images],
                         }
                     })
+                    setTimeout(()=> {
+                        this.onScroll();
+                    }, 500)
                 }
                 if (updateStringQuery || page === 1) {
                     this.setState({ images, page: 1});
                 }
+                
             }
             catch {
                 console.error();
             }
-            setTimeout(()=> {
-                this.onScroll();
-            }, 500)
         }
     }
         
