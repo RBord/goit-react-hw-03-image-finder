@@ -75,7 +75,7 @@ class App extends PureComponent {
             }
             setTimeout(()=> {
                 this.onScroll();
-            }, 1000)
+            }, 500)
         }
     }
         
