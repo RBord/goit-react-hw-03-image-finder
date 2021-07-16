@@ -38,8 +38,9 @@ class App extends PureComponent {
         })
     };
     onScroll = () => {
+        const ulEl = document.querySelector('ul');
         window.scrollTo({
-            top: document.documentElement.scrollHeight,
+            top: ulEl.scrollHeight,
             behavior: 'smooth',
         });
     }
@@ -48,7 +49,7 @@ class App extends PureComponent {
             page: prevState.page + 1,
         }));
     };
-    
+
     async componentDidUpdate(_, prevState) {
         const { imageName, page} = this.state;
         const isPageUpdate = prevState.page !== page;
@@ -56,33 +57,33 @@ class App extends PureComponent {
         if (updateStringQuery || isPageUpdate) {
             this.setState({ reqStatus: 'pending' })
             try {
-                
                 const images = await fetchImages(imageName, page).then(this.setState({ reqStatus: 'resolved' }));
-                
+
                 if (isPageUpdate) {
                     this.setState(prevState => {
                         return {
                             images: [...prevState.images, ...images],
                         }
                     })
-                    
                 }
                 if (updateStringQuery || page === 1) {
                     this.setState({ images, page: 1});
                 }
-                
-                this.onScroll()
             }
             catch {
                 console.error();
             }
+            setTimeout(()=> {
+                this.onScroll();
+            }, 300)
         }
     }
         
     render() {
         const { images, showModal, fullImg, reqStatus} = this.state;
         const isLoading = reqStatus === 'pending';
-        const showImagesGallery = images.length >= 1 && !isLoading;
+        
+        const showImagesGallery = images.length > 1 && !isLoading;
         
         return (
             <div className={s.App}>
